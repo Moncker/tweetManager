@@ -2,9 +2,12 @@ package com.example.tweetManager.tweetManager;
 
 import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusListener;
+import com.example.tweetManager.tweetManager.service.TwitterThread;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import twitter4j.*;
+import twitter4j.TwitterStreamFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.util.ArrayList;
@@ -17,16 +20,34 @@ public class TweetManagerApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(TweetManagerApplication.class, args);
-		startConnection();
+		TwitterThread twitterThread = new TwitterThread();
+		twitterThread.start();
 
 	}
+}
 
+	/*
 	public static void startConnection() {
+		final TwitterStream twitterStream;
+		final StatusListener statusListener;
+
+
+
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true);
 
-		TwitterFactory tf = new TwitterFactory(cb.build());
-		Twitter twitter = tf.getInstance();
+
+
+		//TwitterFactory tf = new TwitterFactory(cb.build());
+		//Twitter twitter = tf.getInstance();
+
+		twitterStream = new TwitterStreamFactory(cb.build()).getInstance();}}
+		/*twitterStream.addListener(new StatusListener () {
+									  public void onStatus(Status status) {
+										  System.out.println(status.getText()) // print tweet text to console
+									  }
+
+	}
 
 
 		StatusListener statusListener = new StatusListener() {
@@ -51,7 +72,7 @@ public class TweetManagerApplication {
 		};
 	}
 }
-
+*/
 /*
 	public static void activationTwitter() {
 		ConfigurationBuilder cb = new ConfigurationBuilder();

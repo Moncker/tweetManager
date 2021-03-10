@@ -1,15 +1,11 @@
 package com.example.tweetManager.tweetManager.service;
 
-import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusListener;
 import com.example.tweetManager.tweetManager.model.Tweet;
 import com.example.tweetManager.tweetManager.repository.TweetRespository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import twitter4j.Paging;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
+import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.util.ArrayList;
@@ -38,7 +34,15 @@ public class TweetService {
         TwitterFactory tf = new TwitterFactory(cb.build());
         Twitter twitter = tf.getInstance();
 
+        String query = "barcelona";
+        QueryResult search = twitter.search(new Query(query));
+        List<Status> tweets = search.getTweets();
 
+
+        return new ArrayList<Tweet>();
+
+
+        /*
         StatusListener statusListener = new StatusListener() {
             Paging paging = new Paging(1, 100);
 
@@ -47,7 +51,7 @@ public class TweetService {
                 List<String> allTweets = new ArrayList<>() {
                 };
                 try {
-                    allTweets = twitter.getUserTimeline("google", paging).stream()
+                    allTweets = twitter.getUserTimeline("rye761", paging).stream()
                             .map(item -> item.getText())
                             .collect(Collectors.toList());
                     ;
@@ -62,16 +66,17 @@ public class TweetService {
 
 
 
-        List<Tweet> tweets = new ArrayList<>();
 
         // for pageable
         tweetRepository.findAll();
 
-        for(Tweet tweet : tweets)
-            tweets.add(tweet);
+        for(Tweet tweet : tweetList)
+            tweetList.add(tweet);
 
-        return tweets;
-    }
+        return tweetList;
+*/    }
+
+
 
 
 
