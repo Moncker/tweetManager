@@ -4,10 +4,7 @@ import com.example.tweetManager.tweetManager.model.Tweet;
 import com.example.tweetManager.tweetManager.service.TweetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import twitter4j.TwitterException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,6 +40,42 @@ public class TweetController {
         return ResponseEntity.status(200)
                 .body(tweets);
     }
+
+
+
+    @RequestMapping(value = "/validate/{idTweet}",
+            method = RequestMethod.PUT,
+            consumes = {"application/json", "application/xml"},
+            produces = {"application/json", "application/xml"})
+    public @ResponseBody
+    ResponseEntity<List<Tweet>> markTweetAsValidate (@PathVariable("idTweet") Integer idTweet,
+                                           HttpServletRequest request, HttpServletResponse response) throws TwitterException {
+
+        return null;
+    }
+
+    @RequestMapping(value = "/validates",
+            method = RequestMethod.GET,
+            produces = {"application/json", "application/xml"})
+    public @ResponseBody
+    ResponseEntity<List<Tweet>> getValidateTweets (@PathVariable("idTweet") Integer idTweet,
+                                           HttpServletRequest request, HttpServletResponse response) throws TwitterException {
+
+        return null;
+    }
+
+
+    @RequestMapping(value = "/validates/{user}",
+            method = RequestMethod.GET,
+            produces = {"application/json", "application/xml"})
+    public @ResponseBody
+    ResponseEntity<List<Tweet>> getValidateTweets (@PathVariable("user") String user,
+                                                   HttpServletRequest request, HttpServletResponse response) throws TwitterException {
+
+        return null;
+    }
+
+
 
 
 
