@@ -60,36 +60,41 @@ public class TweetController {
             method = RequestMethod.GET,
             produces = {"application/json", "application/xml"})
     public @ResponseBody
-    CompletableFuture<ResponseEntity>  getValidateTweets ( @PathVariable(value="page", required = false) Integer page,
+    CompletableFuture<ResponseEntity>  getValidateTweets (
                                                             HttpServletRequest request,
                                                             HttpServletResponse response) throws TwitterException {
-        return tweetSv.allValidates(page).<ResponseEntity>thenApply(ResponseEntity::ok)
+        return tweetSv.allValidates(null).<ResponseEntity>thenApply(ResponseEntity::ok)
                 .exceptionally(handleGetProductFailure);
     }
 
+    // TODO - OR NOT TODO
+    /*
     @RequestMapping(value = "/validates/{page}",
             method = RequestMethod.GET,
             produces = {"application/json", "application/xml"})
     public @ResponseBody
-    CompletableFuture<ResponseEntity>  getValidateTweetsPage ( @PathVariable("idTweet") Long idTweet,
+    CompletableFuture<ResponseEntity>  getValidateTweetsPage ( @PathVariable("page") Integer page,
                                                             HttpServletRequest request,
                                                           HttpServletResponse response) throws TwitterException {
-        return tweetSv.allValidates(null).<ResponseEntity>thenApply(ResponseEntity::ok)
+        return tweetSv.allValidates(page).<ResponseEntity>thenApply(ResponseEntity::ok)
                 .exceptionally(handleGetProductFailure);
     }
+
+     */
 
     @RequestMapping(value = "/validates/{user}",
             method = RequestMethod.GET,
             produces = {"application/json", "application/xml"})
     public @ResponseBody
-    ResponseEntity<List<Tweet>> getValidateTweetsByUser (@PathVariable("user") String user,
+    CompletableFuture<ResponseEntity> getValidateTweetsByUser (@PathVariable("user") String user,
                                                    HttpServletRequest request, HttpServletResponse response) throws TwitterException {
-        tweetSv.allValidatesByUser(user);
 
-        TweetValidator.validateUser(user);
-        //validar - el user no existe: 404
 
-        return null;
+        //TODO validar - el user no existe: 404
+        //TweetValidator.validateUser(user);
+
+        return tweetSv.allValidatesByUser(user).<ResponseEntity>thenApply(ResponseEntity::ok)
+                .exceptionally(handleGetProductFailure);
     }
     private static Function<Throwable, ResponseEntity<? extends String>> handleGetProductFailure = throwable -> {
         //LOGGER.error("Failed to read records: {}", throwable);

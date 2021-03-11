@@ -4,6 +4,7 @@ import com.example.tweetManager.tweetManager.TweetManagerApplication;
 import com.example.tweetManager.tweetManager.model.Tweet;
 import com.example.tweetManager.tweetManager.repository.TweetRespository;
 
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,8 @@ public class TweetSv {
     @Autowired
     TweetRespository tweetRespository;
 
+    static List<Tweet> tweetValidate = new LinkedList<>();
+
     @Async
     public CompletableFuture<List<Tweet>> allTweets(@Nullable Integer page) throws Exception {
         Page<Tweet> pageTweets;
@@ -38,12 +41,8 @@ public class TweetSv {
     public CompletableFuture<List<Tweet>> allValidates(@Nullable Integer page) {
         Page<Tweet> pageTweets;
 
-        if (page != null)
-            pageTweets = tweetRespository.findAll(PageRequest.of(page, 10));
-        else
-            pageTweets = tweetRespository.findAll(PageRequest.of(0, 10));
-
-        return CompletableFuture.completedFuture(pageTweets.toList());
+        // TODO - By search
+        return CompletableFuture.completedFuture(tweetValidate);
     }
 
 
@@ -54,6 +53,7 @@ public class TweetSv {
             return CompletableFuture.completedFuture(false);
         else{
             tweet.get().setValidation(true);
+            tweetValidate.add(tweet.get());
             tweetRespository.save(tweet.get());
             return CompletableFuture.completedFuture(true);
         }
@@ -63,18 +63,22 @@ public class TweetSv {
 
     @Async
     public CompletableFuture<List<Tweet>> allValidatesByUser(String user) {
-        ArrayList<Tweet> tweets = new ArrayList<Tweet>();
-        for (Tweet t : tweetRespository.findAll())
+        List<Tweet> tweets = new LinkedList<>();
+        for(Tweet t : tweetValidate)
             if (t.getUserName().equals(user))
                 tweets.add(t);
         return CompletableFuture.completedFuture(tweets);
     }
 
     // TODO - Hacer por consulta SQL
+    // TODO - Mover variables fichero config
     public CompletableFuture<List<String>> topHastags(Integer cant) {
          LinkedList<String> hastagListStamp = new LinkedList<>(TweetManagerApplication.HASTAG_LIST);
          Map<String, Integer> ranking = new ManagedMap<>();
-        int occurrences;
+         int occurrences;
+
+         if(cant == null)
+             cant = 10;
 
         for (String h : hastagListStamp) {
             occurrences = Collections.frequency(hastagListStamp, h);
