@@ -5,7 +5,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TweetRespository extends PagingAndSortingRepository<Tweet, Integer>{
+public interface TweetRespository extends PagingAndSortingRepository<Tweet, Long>{
 
 
 }
