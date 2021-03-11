@@ -12,6 +12,7 @@ import twitter4j.conf.ConfigurationBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 
 @SpringBootApplication
@@ -19,6 +20,7 @@ public class TweetManagerApplication {
 	final static ArrayList<String> ACCEPTED_LAN = new ArrayList<String>(
 			Arrays.asList("es", "fr", "it"));
 	final static int MIN_FOLLOWERS = 1500;
+	public final static LinkedList<String> HASTAG_LIST = new LinkedList<>();
 
 	@Autowired
 	TweetRespository tweetRepository;
@@ -68,6 +70,11 @@ public class TweetManagerApplication {
 						tweet.setCountry(place.getCountry());
 					}
 					tweet.setValidation(false);
+
+					HashtagEntity[] hashEnt = status.getHashtagEntities();
+
+					for (HashtagEntity h : hashEnt)
+						HASTAG_LIST.add(h.getText());
 
 					tweetRepository.save(tweet);
 					tweetRepository.findById(tweet.getId());

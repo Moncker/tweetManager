@@ -29,6 +29,4 @@ class Tweet {
     @Column
     private Boolean validation;
 
-
-
 }

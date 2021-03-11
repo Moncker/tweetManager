@@ -1,7 +1,9 @@
 package com.example.tweetManager.tweetManager.controller;
 
 import com.example.tweetManager.tweetManager.model.Tweet;
+import com.example.tweetManager.tweetManager.repository.TweetRespository;
 import com.example.tweetManager.tweetManager.service.TweetSv;
+import com.example.tweetManager.tweetManager.validators.TweetValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,51 +24,59 @@ public class TweetController {
     @Autowired
     TweetSv tweetSv;
 
+// TODO - Paginacion
+    @RequestMapping(value = "/tweets/{page}",
+                    method = RequestMethod.GET,
+                    produces = {"application/json" , "application/xml"})
+    public @ResponseBody
+    CompletableFuture<ResponseEntity> getTweetsPage ( @PathVariable(value="page", required = false) Integer page,
+                            HttpServletRequest request, HttpServletResponse response) throws Exception {
+            return tweetSv.allTweets(page).<ResponseEntity>thenApply(ResponseEntity::ok)
+                    .exceptionally(handleGetProductFailure);
+    }
 
     @RequestMapping(value = "/tweets",
                     method = RequestMethod.GET,
                     produces = {"application/json" , "application/xml"})
     public @ResponseBody
-    CompletableFuture<ResponseEntity> getTweets (HttpServletRequest request, HttpServletResponse response) throws Exception {
-        List<Tweet> tweets = new ArrayList<Tweet>();
-        Tweet tweetFake = new Tweet();
-        tweets.add(tweetFake);
-        // Init tweet values
-        tweetFake.setId(1L); tweetFake.setText("Hay mucha sombra en el centro de Vigo");
-        tweetFake.setCity("Vigo"); tweetFake.setUserName("Duardo Boreira");
-        tweetFake.setValidation(false);
-
-        return tweetSv.allTweets().<ResponseEntity>thenApply(ResponseEntity::ok)
-                .exceptionally(handleGetProductFailure);
+    CompletableFuture<ResponseEntity> getTweets (
+                            HttpServletRequest request, HttpServletResponse response) throws Exception {
+            return tweetSv.allTweets(null).<ResponseEntity>thenApply(ResponseEntity::ok)
+                    .exceptionally(handleGetProductFailure);
     }
-
-    private static Function<Throwable, ResponseEntity<? extends String>> handleGetProductFailure = throwable -> {
-        //LOGGER.error("Failed to read records: {}", throwable);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    };
-
 
     @RequestMapping(value = "/validate/{idTweet}",
             method = RequestMethod.PUT,
-            consumes = {"application/json", "application/xml"},
             produces = {"application/json", "application/xml"})
     public @ResponseBody
-    ResponseEntity<List<Tweet>> markTweetAsValidate (@PathVariable("idTweet") Integer idTweet,
+    CompletableFuture<ResponseEntity> markTweetAsValidate (@PathVariable("idTweet") Long idTweet,
                                            HttpServletRequest request, HttpServletResponse response) throws TwitterException {
 
-        return null;
+        return tweetSv.markAsValidate(idTweet).<ResponseEntity>thenApply(ResponseEntity::ok)
+                .exceptionally(handleGetProductFailure);
     }
 
     @RequestMapping(value = "/validates",
             method = RequestMethod.GET,
             produces = {"application/json", "application/xml"})
     public @ResponseBody
-    ResponseEntity<List<Tweet>> getValidateTweets (@PathVariable("idTweet") Integer idTweet,
-                                           HttpServletRequest request, HttpServletResponse response) throws TwitterException {
-
-        return null;
+    CompletableFuture<ResponseEntity>  getValidateTweets ( @PathVariable(value="page", required = false) Integer page,
+                                                            HttpServletRequest request,
+                                                            HttpServletResponse response) throws TwitterException {
+        return tweetSv.allValidates(page).<ResponseEntity>thenApply(ResponseEntity::ok)
+                .exceptionally(handleGetProductFailure);
     }
 
+    @RequestMapping(value = "/validates/{page}",
+            method = RequestMethod.GET,
+            produces = {"application/json", "application/xml"})
+    public @ResponseBody
+    CompletableFuture<ResponseEntity>  getValidateTweetsPage ( @PathVariable("idTweet") Long idTweet,
+                                                            HttpServletRequest request,
+                                                          HttpServletResponse response) throws TwitterException {
+        return tweetSv.allValidates(null).<ResponseEntity>thenApply(ResponseEntity::ok)
+                .exceptionally(handleGetProductFailure);
+    }
 
     @RequestMapping(value = "/validates/{user}",
             method = RequestMethod.GET,
@@ -74,14 +84,36 @@ public class TweetController {
     public @ResponseBody
     ResponseEntity<List<Tweet>> getValidateTweetsByUser (@PathVariable("user") String user,
                                                    HttpServletRequest request, HttpServletResponse response) throws TwitterException {
+        tweetSv.allValidatesByUser(user);
+
+        TweetValidator.validateUser(user);
+        //validar - el user no existe: 404
 
         return null;
     }
+    private static Function<Throwable, ResponseEntity<? extends String>> handleGetProductFailure = throwable -> {
+        //LOGGER.error("Failed to read records: {}", throwable);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    };
 
 
+    @RequestMapping(value="/tophashtags",
+            method = RequestMethod.GET,
+            produces = {"application/json", "application/xml"})
+    public @ResponseBody
+    CompletableFuture<ResponseEntity> getTopHashtags ( HttpServletRequest request, HttpServletResponse response) throws TwitterException {
+        return tweetSv.topHastags(null).<ResponseEntity>thenApply(ResponseEntity::ok)
+                .exceptionally(handleGetProductFailure);
+    }
 
 
-
-
-
+    @RequestMapping(value="/tophashtags/{cant}",
+            method = RequestMethod.GET,
+            produces = {"application/json", "application/xml"})
+    public @ResponseBody
+    CompletableFuture<ResponseEntity> getTopHashtagsCant (@PathVariable("cant") Integer cant,
+            HttpServletRequest request, HttpServletResponse response) throws TwitterException {
+        return tweetSv.topHastags(cant).<ResponseEntity>thenApply(ResponseEntity::ok)
+                .exceptionally(handleGetProductFailure);
+    }
 }
