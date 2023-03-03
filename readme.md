@@ -1,4 +1,4 @@
-# Code Challenge: Tweet Manager
+# Tweet Manager - Focus on relevant tweets
 
 ### Requisitos 
 
